@@ -14,7 +14,7 @@ import java.util.Iterator;
 import java.util.Set;
 
 /**
- * 模拟网络UDP通信
+ * 使用UDP通信，实现路由间相互通信的底层逻辑。
  * @author zyt
  * @date 23/11/30
  */
@@ -84,7 +84,7 @@ public class TransportLayer {
 
     /**
      * 接收UDP消息, 缓存到字节数组recvBuf中
-     * @param timeout 超时时间
+     * @param timeout 超时时间, 若为0就是一直等待直至消息到来
      * @return 存放收到的UDP消息的byte数组转换的String
      * @throws IOException
      */

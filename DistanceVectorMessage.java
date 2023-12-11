@@ -1,8 +1,5 @@
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import config.*;
 import org.junit.Test;
@@ -20,6 +17,15 @@ public class DistanceVectorMessage {
     private List<PathCost> toNodes;
     private int msgType;
     private String fromNodeId;
+
+    @Override
+    public String toString() {
+        return "DistanceVectorMessage：" +
+                "目的节点：" + toNodes +
+                ", 消息类型：" + msgType +
+                ", fromNodeId='" + fromNodeId + '\'' +
+                '}';
+    }
 
     public DistanceVectorMessage() {
         this.toNodes = new ArrayList<>();
@@ -112,7 +118,7 @@ public class DistanceVectorMessage {
         //前两次匹配，匹配到的是ping和reply消息，第三次是PathCost消息
         int count = 0;
         PathCost pathCost = new PathCost();
-        String[] split0 = exField.split(receivedStr);
+        String[] split0 = EX_FIELD.split(receivedStr);
         for (String s : split0) {
             count++;
             if (count == 1) {
@@ -130,7 +136,7 @@ public class DistanceVectorMessage {
             }
             //将PathCost消息分割
             if (count > 2) {
-                String[] split = exPathCost.split(s);
+                String[] split = EX_PATHCOST.split(s);
                 //分奇偶初始化pathCost的属性
                 for (int i = 0; i < split.length; i++) {
                     if (i % 2 == 0) {

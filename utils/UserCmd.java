@@ -18,6 +18,7 @@ public class UserCmd {
                 int bytesRead = inputStream.read(buffer);
                 // 将读取的字节复制到提供的缓冲区中,
                 System.arraycopy(buffer, 0, cmdBuf, 0, bytesRead);
+
                 return 1;
             }
             return 0;

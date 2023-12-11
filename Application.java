@@ -2,11 +2,13 @@ import utils.TransportLayer;
 import utils.UserCmd;
 
 import java.io.IOException;
+import java.nio.charset.Charset;
 
 import static config.Constant.*;
+import static utils.BytesToStr.byteToStr;
 
 /**
- * @author 86130
+ * @author zyt
  */
 public class Application {
     public static void main(String[] args) {
@@ -27,19 +29,29 @@ public class Application {
             TransportLayer transportLayer = new TransportLayer(SRC_IP_ADDR, selfPort);
 
             NodeRouteingImpl nodeRouteing = new NodeRouteingImpl(INTERVAL, networkNode, transportLayer);
-
-            while (true) {
-                if (UserCmd.readUserCmd(userCmd, MAX_CMD_LEN) == 1) {
-                    String str = new String(userCmd);
-                    if (str.equals("exit")) {
-                        System.out.println("退出程序");
-                        System.exit(0);
-                    } else if (str.equals("disp_rt")) {
-                        System.out.println("展示路由表");
-                        networkNode.displayRoutingTable();
+            //创建守护线程, 用于后台检测用户输入指令
+            Thread testSysIn = new Thread(()->{
+                while (true){
+                    if (UserCmd.readUserCmd(userCmd, MAX_CMD_LEN) == 1) {
+                        String str = byteToStr(userCmd);
+                        if (str.equals("exit\n")) {
+                            System.out.println("退出程序");
+                            System.exit(0);
+                        } else if (str.equals("disp\n")) {
+                            System.out.println("展示路由表");
+                            networkNode.displayRoutingTable();
+                        }
+                        else if (str.equals("help\n")){
+                            System.out.println("exit: 退出程序");
+                            System.out.println("disp：展示路由表");
+                        }
+                        //todo:添加其他指令，比如删除某节点。
                     }
-                    //todo:添加其他指令，比如删除某节点。
                 }
+            });
+            testSysIn.setDaemon(true);
+            testSysIn.start();
+            while (true) {
                 String receivedStr = transportLayer.getMsg(0);
                 DistanceVectorMessage dvMessage = new DistanceVectorMessage();
                 dvMessage.decode(receivedStr);
@@ -69,6 +81,7 @@ public class Application {
                         }
                         // 将该节点设置成已连接邻居
                         networkNode.setNeighConnected(fromNodeId);
+//                        System.out.println(dvMessage.toString());
                         networkNode.displayRoutingTable();
                         break;
 

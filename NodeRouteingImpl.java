@@ -9,7 +9,7 @@ import java.util.concurrent.*;
 import static config.Constant.*;
 
 /**
- * 这个类完全是为了实现网络节点间定时交换距离矢量信息的模拟
+ * NodeRouteing实现类，实现网络节点间定时交换距离矢量信息的模拟。
  * @author zyt
  */
 public class NodeRouteingImpl implements NodeRouteing {
@@ -22,6 +22,7 @@ public class NodeRouteingImpl implements NodeRouteing {
        this.transportLayer = transportLayer1;
        this.scheduler = Executors.newScheduledThreadPool(1);
        this.scheduler.scheduleAtFixedRate(()->{
+           //这个就相当于重写的run方法。
            DistanceVectorMessage dvMessage = constructDistanceVectorMessage(networkNode,PING_MSG);
            try {
                this.floodDistanceVectorMsg(transportLayer,networkNode,dvMessage);
